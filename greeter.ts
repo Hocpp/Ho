@@ -1,0 +1,656 @@
+class Student {
+    fullName: String;
+    constructor(public firstName, public middleInitial, public lastName) {
+        this.fullName = firstName + " " + middleInitial + " " + lastName;
+    }
+}
+interface Person {
+    firstName: string;
+    lastName: string;
+}
+function greeter(person: Person) {
+    return "Hello, " + person.firstName + " " + person.lastName;
+}
+let user = new Student("Jane", "M.", "User");
+console.log(greeter(user))
+
+let decLiteral: number = 6;
+let hexLiteral: number = 0xf00d;
+// ES6 中的二进制表示法
+let binaryLiteral: number = 0b1010;
+// ES6 中的八进制表示法
+let octalLiteral: number = 0o744;
+let notANumber: number = NaN;
+let infinityNumber: number = Infinity;
+let myName: string = 'Tom';
+let myAge: number = 25;
+// 模板字符串
+let sentence: string = `Hello, my name is ${myName}.I'll be ${myAge + 1} years old next month.`;
+
+//JavaScript 没有空值（Void）的概念，在 TypeScript 中，可以用 void 表示没有任何返回值的函数：
+function alertName(): void {
+    alert('My name is Tom');
+}
+// alertName()
+
+let unusable: void = undefined;
+let u: undefined = undefined;
+let n: null = null;
+
+//任意值--任意值（Any）用来表示允许赋值为任意类型。
+//如果是一个普通类型，在赋值过程中改变类型是不被允许的：任意值可以改变
+let myFavoriteNumber: any = 'seven';
+myFavoriteNumber = 7;
+
+let anyThing:any = 'Ho'
+console.log(anyThing.myName);
+//未声明类型的变量
+// 变量如果在声明的时候，未指定其类型，那么它会被识别为任意值类型：
+//如果没有明确的指定类型，那么 TypeScript 会依照类型推论（Type Inference）的规则推断出一个类型
+// let myFavoriteNumber = 'seven';
+// myFavoriteNumber = 7; 报错
+//上面等价于
+// let myFavoriteNumber: string = 'seven';
+// myFavoriteNumber = 7; 报错
+//如果定义的时候没有赋值，不管之后有没有赋值，都会被推断成 any 类型而完全不被类型检查：
+
+//联合类型
+//联合类型（Union Types）表示取值可以为多种类型中的一种。
+//联合类型使用 | 分隔每个类型
+let myFavoriteNumber2: string | number;
+myFavoriteNumber2 = 'seven';
+myFavoriteNumber2 = 7;
+
+//访问联合类型的属性或方法
+//当 TypeScript 不确定一个联合类型的变量到底是哪个类型的时候，
+// 我们只能访问此联合类型的所有类型里共有的属性或方法：
+//toString是string和number共有的方法
+function getString(something: string | number): string {
+    return something.toString();
+}
+//联合类型的变量在被赋值的时候，会根据类型推论的规则推断出一个类型：
+let myFavoriteNumber3: string | number;
+myFavoriteNumber3 = 'seven';
+console.log(myFavoriteNumber3.length); // 5
+// myFavoriteNumber3 = 7; 已被推导为字符串
+// console.log(myFavoriteNumber.length); // 编译时报错
+
+//never类型表示的是那些永不存在的值的类型
+// never类型是那些总是会抛出异常或根本就不会有返回值的函数表达式或箭头函数表达式的返回值类型
+//never类型是任何类型的子类型，也可以赋值给任何类型
+// 返回never的函数必须存在无法达到的终点
+function error(message: string): never {
+    throw new Error(message);
+}
+
+// 推断的返回值类型为never
+function fail() {
+    return error("Something failed");
+}
+// 返回never的函数必须存在无法达到的终点
+function infiniteLoop(): never {
+    while (true) {
+    }
+}
+
+//数组的类型--在 TypeScript 中，数组类型有多种定义方式，比较灵活
+//「类型 + 方括号」表示法
+let fibonacci: number[] = [1, 1, 2, 3, 5]; //只能数值的类型
+
+//数组泛型--数组泛型（Array Generic） Array<elemType> 来表示数组
+let fibonacci2: Array<number> = [1, 1, 2, 3, 5];
+//TypeScript具有ReadonlyArray<T>类型，它与Array<T>相似，只是把所有可变方法去掉了，
+// 因此可以确保数组创建后再也不能被修改
+let a10: number[] = [1, 2, 3, 4];
+let ro: ReadonlyArray<number> = a10;
+//用接口表示数组
+//可索引的类型
+//TypeScript支持两种索引签名：字符串和数字。 可以同时使用两种类型的索引，
+// 但是数字索引的返回值必须是字符串索引返回值类型的子类型
+interface NumberArray {
+    [index: number]: number;
+}
+//NumberArray 表示：只要 index 的类型是 number，那么值的类型必须是 number
+let fibonacci3: NumberArray = [1, 1, 2, 3, 5];
+//any 在数组中的应用
+let list: any[] = ['Xcat Liu', 25, { website: 'http://xcatliu.com' }];
+interface StringArray {
+    [index: number]: string;
+}
+let myArray: StringArray;
+myArray = ["Bob", "Fred"];
+let myStr: string = myArray[0];
+//类数组--类数组（Array-like Object）不是数组类型，比如 arguments
+//事实上常见的类数组都有自己的接口定义，如 IArguments, NodeList, HTMLCollection
+function sum2() {
+    let args: IArguments = arguments;
+}
+//元组 Tuple--元组类型允许表示一个已知元素数量和类型的数组，各元素的类型不必相同。
+// 比如，你可以定义一对值分别为 string和number类型的元组
+// Declare a tuple type
+let x: [string, number];
+// Initialize it
+x = ['hello', 10]; // OK
+// Initialize it incorrectly
+// x = [10, 'hello']; // Error
+// 当访问一个已知索引的元素，会得到正确的类型：
+console.log(x[0].substr(1)); // OK
+// console.log(x[1].substr(1)); // Error, 'number' does not have 'substr'
+// 当访问一个越界的元素，会使用联合类型替代：
+// x[3] = 'world'; // OK, 字符串可以赋值给(string | number)类型
+// console.log(x[5].toString()); // OK, 'string' 和 'number' 都有 toString
+// x[6] = true; // Error, 布尔不是(string | number)类型
+
+//类型断言 类型断言（Type Assertion）可以用来手动指定一个值的类型。
+//语法 <类型>值 或 值 as 类型
+//类型断言不是类型转换，断言成一个联合类型中不存在的类型是不允许的
+//当你在TypeScript里使用JSX时，只有 as语法断言是被允许的。
+function getLength(something: string | number): number {
+    if ((<string>something).length) {  //(something as string).length
+        return (<string>something).length;
+    } else {
+        return something.toString().length;
+    }
+}
+console.log('ho',getLength(123))
+
+//对象的类型——接口 在TypeScript中，我们使用接口（Interfaces）来定义对象的类型。
+//定义了一个接口 Personal，接着定义了一个变量 tom，它的类型是 Personal。
+// 这样就约束了 tom 的形状必须和接口 Personal 一致。
+interface Personal {
+    name: string;
+    age: number;
+}
+let tom: Personal = {
+    name: 'Tom',
+    age: 25
+};
+//定义的变量比接口少了一些属性是不允许的,多一些属性也是不允许的,必须一样,
+// 可见，赋值的时候，变量的形状必须和接口的形状保持一致
+// interface Person1 {
+//     name: string;
+//     age: number;
+// }
+// let tom2: Person1 = { 报错,不能比接口的属性少
+//     name: 'Tom'
+// };
+
+//可选属性--有时我们希望不要完全匹配一个形状，那么可以用可选属性,在变量属性名后面加?
+//仍然不允许添加未定义的属性
+interface Person3 {
+    name: string;
+    age?: number; //可选属性
+}
+let tom3: Person3 = {
+    name: 'Tom'
+};
+//任意属性--有时候我们希望一个接口允许有任意的属性,在接口定义[propName:string]:any
+//一旦定义了任意属性，那么确定属性和可选属性的类型都必须是它的类型的子集
+interface Person4 {
+    name: string;
+    age?: number;
+    [propName: string]: any; //任意属性和允许任何类型
+    // [propName: string]: string; 确定属性和可选属性的类型不是string的话会报错
+}
+let tom4: Person4 = {
+    name: 'Tom',
+    age: 26,
+    gender: 'male'
+};
+//只读属性--有时候我们希望对象中的一些字段只能在创建的时候被赋值，那么可以用 readonly 定义只读属性
+interface Person5 {
+    readonly id: number; //只读属性
+    name: string; //确定属性
+    age?: number; //可选属性
+    [propName: string]: any; //任意属性
+}
+let tom5: Person5 = {
+    id: 89757,
+    name: 'Tom',
+    gender: 'male'
+};
+
+//readonly vs const
+//最简单判断该用readonly还是const的方法是看要把它做为变量使用还是做为一个属性。
+// 做为变量使用的话用 const，若做为属性则使用readonly
+
+//额外的属性检查
+interface SquareConfig {
+    color?: string;
+    width?: number;
+}
+
+function createSquare(config: SquareConfig): { color: string; area: number } {
+    let newSquare = {color: "white", area: 100};
+    // ...
+    return newSquare
+}
+//error: 'colour' not expected in type 'SquareConfig'
+// let mySquare = createSquare({ colour: "red", width: 100 });
+//绕开这些检查非常简单。 最简便的方法是使用类型断言
+let mySquare = createSquare({ width: 100, opacity: 0.5 } as SquareConfig);
+
+//函数类型
+//为了使用接口表示函数类型，我们需要给接口定义一个调用签名。 它就像是一个只有参数列表和返回值类型的函数定义。
+// 参数列表里的每个参数都需要名字和类型
+interface SearchFunc {
+    (source:string,subString:string):boolean
+}
+let SearchFunc: SearchFunc;
+//对于函数类型的类型检查来说，函数的参数名不需要与接口里定义的名字相匹配
+SearchFunc = function(source: string, subString: string) {
+    let result = source.search(subString);
+    return result > -1;
+}
+let SearchFunc2 = <SearchFunc>function(source: string, subString: string) {
+    let result = source.search(subString);
+    return result > -1;
+}
+//可索引的类型
+interface StringArrayF {
+    [index: number]: string;
+}
+let myArrayF: StringArrayF;
+myArrayF = ["Bob", "Fred"];
+let myStrF: string = myArray[0];
+
+class Animals {
+    name: string;
+}
+class Dog extends Animals {
+    breed: string;
+}
+// 错误：使用数值型的字符串索引，有时会得到完全不同的Animal!
+interface NotOkays {
+    // [x: number]: Animals;
+    [x: string]: Dog;
+}
+
+//类类型
+interface ClockInterface {
+    currentTime: Date;
+}
+class Clock implements ClockInterface {
+    currentTime: Date;
+    constructor(h: number, m: number) { }
+}
+interface Itest {
+    webName: string;
+}
+class Antzone implements Itest {
+    webName: "蚂蚁部落";
+    age:4;
+    constructor() { }
+}
+//也可以在接口中描述一个方法，在类里实现它
+interface ClockInterface2 {
+    currentTime: Date;
+    setTime(d: Date);
+}
+class Clock2 implements ClockInterface2 {
+    currentTime: Date;
+    setTime(d: Date) {
+        this.currentTime = d;
+    }
+    constructor(h: number, m: number) { }
+}
+//类静态部分与实例部分的区别
+interface ClockConstructor {
+    new (hour: number, minute: number): ClockInterface3;
+}
+interface ClockInterface3 {
+    tick();
+}
+function createClock(ctor: ClockConstructor, hour: number, minute: number): ClockInterface3 {
+    return new ctor(hour, minute);
+}
+class DigitalClocks implements ClockInterface3 {
+    constructor(h: number, m: number) { }
+    tick() {
+        console.log("beep beep");
+    }
+}
+class AnalogClocke implements ClockInterface3 {
+    constructor(h: number, m: number) { }
+    tick() {
+        console.log("tick tock");
+    }
+}
+let digital = createClock(DigitalClocks, 12, 17);
+let analog = createClock(AnalogClocke, 7, 32);
+//继承接口
+//和类一样，接口也可以相互继承。 这让我们能够从一个接口里复制成员到另一个接口里，
+// 可以更灵活地将接口分割到可重用的模块里
+interface Shape {
+    color: string;
+}
+interface Square extends Shape {
+    sideLength: number;
+}
+let square = <Square>{};
+square.color = "blue";
+square.sideLength = 10;
+//一个接口可以继承多个接口，创建出多个接口的合成接口
+interface Shape2 {
+    color: string;
+}
+
+interface PenStroke {
+    penWidth: number;
+}
+
+interface Square2 extends Shape2, PenStroke {
+    sideLength: number;
+}
+
+let square2 = <Square2>{};
+square2.color = "blue";
+square2.sideLength = 10;
+square2.penWidth = 5.0;
+//混合类型---一个对象可以同时做为函数和对象使用，并带有额外的属性
+//声明一个接口，如果只有(start: number): string一个成员，那么这个接口就是函数接口，同时还具有其他两个成员，
+// 可以用来描述对象的属性和方法，这样就构成了一个混合接口
+interface Counter {
+    (start: number): string;
+    interval: number;
+    reset(): void;
+}
+//创建一个函数，它的返回值是Counter类型的
+function getCounter(): Counter {
+    //通过类型断言，将函数对象转换为Counter类型，转换后的对象不但实现了函数接口的描述，
+    // 使之成为一个函数，还具有interval属性和reset()方法
+    let counter = <Counter>function (start: number) { };
+    counter.interval = 123;
+    counter.reset = function () { };
+    return counter;
+}
+let c = getCounter();
+c(10);
+c.reset();
+c.interval = 5.0;
+//接口继承类--当接口继承了一个类类型时，它会继承类的成员但不包括其实现
+//接口同样会继承到类的private和protected成员
+class Control {
+    private state: any;
+}
+interface SelectableControl extends Control {
+    select(): void;
+}
+class Button extends Control implements SelectableControl {
+    select() { }
+}
+class TextBox extends Control {
+    select() { }
+}
+// 错误：“Image”类型缺少“state”属性。
+// class Image implements SelectableControl {
+//     select() { }
+// }
+// class Location {
+// }
+
+//声明文件
+// declare var 声明全局变量
+// declare function 声明全局方法
+// declare class 声明全局类
+// declare enum 声明全局枚举类型
+// declare namespace 声明（含有子属性的）全局对象
+// interface 和 type 声明全局类型
+// export 导出变量
+// export namespace 导出（含有子属性的）对象
+// export default ES6 默认导出
+// export = commonjs 导出模块
+// export as namespace UMD 库声明全局变量
+// declare global 扩展全局变量
+// declare module 扩展模块
+/// <reference /> 三斜线指令
+
+//什么是声明语句 假如我们想使用第三方库 jQuery，一种常见的方式是在 html 中通过 <script>
+// 标签引入 jQuery，然后就可以使用全局变量 $ 或 jQuery 了,但是在 ts 中，编译器并不知道 $ 或 jQuery 是什么东西
+//这时，我们需要使用 declare var 来定义它的类型
+//declare var jQuery: (selector: string) => any;
+
+//什么是声明文件 通常我们会把声明语句放到一个单独的文件（jQuery.d.ts）中，这就是声明文件
+//声明文件必需以 .d.ts 为后缀
+// src/jQuery.d.ts
+// declare var jQuery: (selector: string) => any;
+//使用 @types 统一管理第三方库的声明文件。
+//npm install @types/jquery --save-dev 安装jquery声明模块
+
+//declare var 是最简单的，如之前所学，它能够用来定义一个全局变量的类型。与其类似的，
+// 还有 declare let 和 declare const，使用 let 与使用 var 没有什么区别：
+declare let jQuery: (selector: string) => any; //声明一个jQuery函数，返回任意类型
+//声明语句中只能定义类型，切勿在声明语句中定义具体的实现
+
+//declare function --> declare function 用来定义全局函数的类型。
+// jQuery 其实就是一个函数，所以也可以用 function 来定义：
+// src/jQuery.d.ts
+declare function jQuery2(selector: string): any;
+
+//declare class 当全局变量是一个类的时候，我们用 declare class 来定义它的类型
+// src/Animal.d.ts
+declare class Animal {
+    name: string;
+    constructor(name: string);
+    sayHi(): string;
+}
+//declare enum 使用 declare enum 定义的枚举类型也称作外部枚举（Ambient Enums）
+// src/Directions.d.ts
+declare enum Directions {
+    Up,
+    Down,
+    Left,
+    Right
+}
+let directions = [Directions.Up, Directions.Down, Directions.Left, Directions.Right];
+
+//declare namespace --> namespace 是 ts 早期时为了解决模块化而创造的关键字，中文称为命名空间
+//interface 和 type
+//除了全局变量之外，可能有一些类型也希望能暴露出来。在类型声明文件中，
+// 可以直接使用 interface 或 type 来声明一个全局的接口或类型
+// src/jQuery.d.ts
+interface AjaxSettings {
+    method?: 'GET' | 'POST'
+    data?: any;
+}
+declare namespace jQuery3 {
+    function ajax(url: string, settings?: AjaxSettings): void;
+}
+let settings: AjaxSettings = {
+    method: 'POST',
+    data: {
+        name: 'foo'
+    }
+};
+jQuery3.ajax('/api/post_something', settings);
+//防止命名冲突
+// src/jQuery.d.ts
+
+declare namespace jQuery4 {
+    interface AjaxSettings {
+        method?: 'GET' | 'POST'
+        data?: any;
+    }
+    function ajax(url: string, settings?: AjaxSettings): void;
+}
+let settings2: jQuery4.AjaxSettings = {
+    method: 'POST',
+    data: {
+        name: 'foo'
+    }
+};
+jQuery4.ajax('/api/post_something', settings2);
+
+//内置对象 内置对象是指根据标准在全局作用域（Global）上存在的对象。
+// 这里的标准是指 ECMAScript 和其他环境（比如 DOM）的标准。Boolean、Error、Date、RegExp 等
+//DOM 和 BOM 提供的内置对象有：
+// Document、HTMLElement、Event、NodeList 等
+let body: HTMLElement = document.body;
+let allDiv: NodeList = document.querySelectorAll('div');
+document.addEventListener('click', function(e: MouseEvent) {
+    // Do something
+});
+
+//类型别名--类型别名用来给一个类型起个新名字
+//类型别名常用于联合类型
+type Name = string;
+type NameResolver = () => string;
+type NameOrResolver = Name | NameResolver;
+function getName(n: NameOrResolver): Name {
+    if (typeof n === 'string') {
+        return n;
+    } else {
+        return n();
+    }
+}
+
+//字符串字面量类型--字符串字面量类型用来约束取值只能是某几个字符串中的一个
+type EventNames = 'click' | 'scroll' | 'mousemove';
+function handleEvent(ele: Element, event: EventNames) {
+    // do something
+}
+
+handleEvent(document.getElementById('hello'), 'scroll');  // 没问题
+// handleEvent(document.getElementById('world'), 'dbclick'); // 报错，event 不能为 'dbclick'
+
+//元组--数组合并了相同类型的对象，而元组（Tuple）合并了不同类型的对象
+//定义一对值分别为 string 和 number 的元组
+let tom2: [string, number] = ['Tom', 25];
+
+let tomt: [string, number];
+tomt = ['Tom', 25];
+//当添加越界的元素时，它的类型会被限制为元组中每个类型的联合类型
+tomt.push('male');
+// Argument of type 'true' is not assignable to parameter of type 'string | number'.
+// tomt.push(true);
+
+//枚举（Enum）类型用于取值被限定在一定范围内的场景，比如一周只能有七天，颜色限定为红绿蓝等
+enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat}
+//枚举成员会被赋值为从 0 开始递增的数字，同时也会对枚举值到枚举名进行反向映射
+console.log(Days["Sun"] === 0); // true
+console.log(Days["Mon"] === 1); // true
+console.log(Days["Tue"] === 2); // true
+console.log(Days["Sat"] === 6); // true
+console.log(Days[0] === "Sun"); // true
+console.log(Days[1] === "Mon"); // true
+console.log(Days[2] === "Tue"); // true
+console.log(Days[6] === "Sat"); // true
+
+//给枚举项手动赋值
+enum Days2 {Sun = 7, Mon = 1, Tue, Wed, Thu, Fri, Sat}
+console.log(Days2["Sun"] === 7) // true
+console.log(Days2["Mon"] === 1) // true
+console.log(Days2["Tue"] === 2) // true
+console.log(Days2["Sat"] === 6) // true
+//手动赋值的枚举项也可以为小数或负数，此时后续未手动赋值的项的递增步长仍为 1
+enum Days3 {Sun = 7, Mon = 1.5, Tue, Wed, Thu, Fri, Sat};
+console.log(Days3["Sun"] === 7); // true
+console.log(Days3["Mon"] === 1.5); // true
+console.log(Days3["Tue"] === 2.5); // true
+console.log(Days3["Sat"] === 6.5); // true
+
+//类
+//在TypeScript里，成员都默认为 public。
+//当成员被标记成 private时，它就不能在声明它的类的外部访问
+//protected修饰符与 private修饰符的行为很相似，但有一点不同， protected成员在派生类中仍然可以访问
+class Animal2 {
+    name: string;
+    constructor(theName: string) { this.name = theName; }
+    move(distanceInMeters: number = 0) {
+        console.log(`${this.name} moved ${distanceInMeters}m.`);
+    }
+}
+
+class Snake extends Animal2 {
+    constructor(name: string) { super(name); }
+    move(distanceInMeters = 5) {
+        console.log("Slithering...");
+        super.move(distanceInMeters);
+    }
+}
+
+class Horse extends Animal2 {
+    constructor(name: string) { super(name); }
+    move(distanceInMeters = 45) {
+        console.log("Galloping...");
+        super.move(distanceInMeters);
+    }
+}
+
+let sam = new Snake("Sammy the Python");
+let tomtom: Animal2 = new Horse("Tommy the Palomino");
+sam.move();
+tomtom.move(34);
+//readonly修饰符--可以使用 readonly关键字将属性设置为只读的。 只读属性必须在声明时或构造函数里被初始化
+class Octopus {
+    readonly name: string;
+    readonly numberOfLegs: number = 8;
+    constructor (theName: string) {
+        this.name = theName;
+    }
+}
+let dad = new Octopus("Man with the 8 strong legs");
+// dad.name = "Man with the 3-piece suit"; // 错误! name 是只读的.
+
+//存取器--TypeScript支持通过getters/setters来截取对对象成员的访问
+
+//静态属性
+
+
+//函数的类型
+function sum3(x: number, y: number): number {
+    return x + y;
+}
+//函数表达式
+//(x: number, y: number) => number 对mySum 添加类型
+//TypeScript 的类型定义中，=> 用来表示函数的定义
+let mySum: (x: number, y: number) => number = function (x: number, y: number): number {
+    return x + y;
+};
+
+//用接口定义函数的形状
+interface SearchFunc {
+    (source: string, subString: string): boolean;
+}
+
+let mySearch: SearchFunc;
+mySearch = function(source: string, subString: string) {
+    return source.search(subString) !== -1;
+}
+//可选参数--可选参数必须接在必需参数后面
+function buildName(firstName: string, lastName?: string):string {
+    if (lastName) {
+        return firstName + ' ' + lastName;
+    } else {
+        return firstName;
+    }
+}
+let tomcat = buildName('Tom', 'Cat');
+let tom6 = buildName('Tom');
+
+//参数默认值
+function buildName2(firstName: string, lastName: string = 'Cat') {
+    return firstName + ' ' + lastName;
+}
+let tomcat2 = buildName2('Tom', 'Cat');
+let tom7 = buildName2('Tom');
+
+function push(array: any[], ...items: any[]) {
+    items.forEach(function(item) {
+        array.push(item);
+    });
+}
+
+let a = [];
+push(a, 1, 2, 3);
+
+//重载--重载允许一个函数接受不同数量或类型的参数时
+function reverse(x: number): number;
+function reverse(x: string): string;
+function reverse(x: number | string): number | string {
+    if (typeof x === 'number') {
+        return Number(x.toString().split('').reverse().join(''));
+    } else if (typeof x === 'string') {
+        return x.split('').reverse().join('');
+    }
+}
