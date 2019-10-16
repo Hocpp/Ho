@@ -389,6 +389,181 @@ class TextBox extends Control {
 // class Location {
 // }
 
+
+//类
+//在TypeScript里，成员都默认为 public。
+//当成员被标记成 private时，它就不能在声明它的类的外部访问
+//protected修饰符与 private修饰符的行为很相似，但有一点不同， protected成员在派生类中仍然可以访问
+class Animal2 {
+    name: string;
+    constructor(theName: string) { this.name = theName; }
+    move(distanceInMeters: number = 0) {
+        console.log(`${this.name} moved ${distanceInMeters}m.`);
+    }
+}
+class Snake extends Animal2 {
+    constructor(name: string) { super(name); }
+    move(distanceInMeters = 5) {
+        console.log("Slithering...");
+        super.move(distanceInMeters);
+    }
+}
+class Horse extends Animal2 {
+    constructor(name: string) { super(name); }
+    move(distanceInMeters = 45) {
+        console.log("Galloping...");
+        super.move(distanceInMeters);
+    }
+}
+let sam = new Snake("Sammy the Python");
+let tomtom: Animal2 = new Horse("Tommy the Palomino");
+sam.move();
+tomtom.move(34);
+//readonly修饰符--可以使用 readonly关键字将属性设置为只读的。 只读属性必须在声明时或构造函数里被初始化
+class Octopus {
+    readonly name: string;
+    readonly numberOfLegs: number = 8;
+    constructor (theName: string) {
+        this.name = theName;
+    }
+}
+let dad = new Octopus("Man with the 8 strong legs");
+// dad.name = "Man with the 3-piece suit"; // 错误! name 是只读的.
+
+//公共，私有与受保护的修饰符,默认为 public
+class Animal3 {
+    public name: string;
+    public constructor(theName: string) { this.name = theName; }
+    public move(distanceInMeters: number) {
+        console.log(`${this.name} moved ${distanceInMeters}m.`);
+    }
+}
+//理解 private--当成员被标记成 private时，它就不能在声明它的类的外部访问
+class Animal4 {
+    private name: string;
+    constructor(theName: string) { this.name = theName; }
+}
+// new Animal4("Cat").name; // 错误: 'name' 是私有的.
+//TypeScript使用的是结构性类型系统。 当我们比较两种不同的类型时，并不在乎它们从何处而来，
+// 如果所有成员的类型都是兼容的，我们就认为它们的类型是兼容的
+
+//理解 protected--protected修饰符与 private修饰符的行为很相似，但有一点不同，
+// protected成员在派生类中仍然可以访问
+class Persons {
+    protected name: string;
+    constructor(name: string) { this.name = name; }
+}
+class Employee extends Persons {
+    private department: string;
+    constructor(name: string, department: string) {
+        super(name)
+        this.department = department;
+    }
+    public getElevatorPitch() {
+        return `Hello, my name is ${this.name} and I work in ${this.department}.`;
+    }
+}
+let howard = new Employee("Howard", "Sales");
+console.log(howard.getElevatorPitch());
+// console.log(howard.name); // 错误
+//构造函数也可以被标记成 protected。 这意味着这个类不能在包含它的类外被实例化，但是能被继承
+class Personf {
+    protected name: string;
+    protected constructor(theName: string) { this.name = theName; }
+}
+// Employee 能够继承 Person
+class Employee2 extends Personf {
+    private department: string;
+    constructor(name: string, department: string) {
+        super(name);
+        this.department = department;
+    }
+    public getElevatorPitch() {
+        return `Hello, my name is ${this.name} and I work in ${this.department}.`;
+    }
+}
+//存取器--TypeScript支持通过getters/setters来截取对对象成员的访问
+//没有使用存取器的例子
+class Employee3 {
+    fullName: string;
+}
+let employee = new Employee3();
+employee.fullName = "Bob Smith";
+if (employee.fullName) {
+    console.log(employee.fullName);
+}
+//使用存取器的例子
+let passcode = "secret passcode";
+class Employee4 {
+    private _fullName: string;
+    get fullName(): string {
+        return this._fullName;
+    }
+    set fullName(newName: string) {
+        if (passcode && passcode == "secret passcode") {
+            this._fullName = newName;
+        }
+        else {
+            console.log("Error: Unauthorized update of employee!");
+        }
+    }
+}
+let employee2 = new Employee4();
+employee2.fullName = "Bob Smith";
+if (employee2.fullName) {
+    alert(employee2.fullName);
+}
+//静态属性--这些属性存在于类本身上面而不是类的实例上
+class Grid {
+    static origin = {x: 0, y: 0};
+    calculateDistanceFromOrigin(point: {x: number; y: number;}) {
+        //每个实例想要访问这个属性的时候，都要在 origin前面加上类名
+        let xDist = (point.x - Grid.origin.x);
+        let yDist = (point.y - Grid.origin.y);
+        return Math.sqrt(xDist * xDist + yDist * yDist) / this.scale;
+    }
+    constructor (public scale: number) { }
+}
+let grid1 = new Grid(1.0);  // 1x scale
+let grid2 = new Grid(5.0);  // 5x scale
+console.log(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
+console.log(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
+//抽象类--抽象类做为其它派生类的基类使用。 它们一般不会直接被实例化。 不同于接口，
+// 抽象类可以包含成员的实现细节。 abstract关键字是用于定义抽象类和在抽象类内部定义抽象方法
+abstract class Animalss {
+    abstract makeSound(): void;
+    move(): void {
+        console.log('roaming the earch...');
+    }
+}
+//抽象类中的抽象方法不包含具体实现并且必须在派生类中实现。 抽象方法的语法与接口方法相似。
+// 两者都是定义方法签名但不包含方法体。 然而，抽象方法必须包含 abstract关键字并且可以包含访问修饰符
+abstract class Departments {
+    constructor(public name: string) {
+    }
+    printName(): void {
+        console.log('Department name: ' + this.name);
+    }
+    abstract printMeeting(): void; // 必须在派生类中实现
+}
+class AccountingDepartment extends Departments {
+    constructor() {
+        super('Accounting and Auditing'); // 在派生类的构造函数中必须调用 super()
+    }
+    printMeeting(): void {
+        console.log('The Accounting Department meets each Monday at 10am.');
+    }
+    generateReports(): void {
+        console.log('Generating accounting reports...');
+    }
+}
+let department: Departments; // 允许创建一个对抽象类型的引用
+// department = new Departmenst(); // 错误: 不能创建一个抽象类的实例
+department = new AccountingDepartment(); // 允许对一个抽象子类进行实例化和赋值
+department.printName();
+department.printMeeting();
+// department.generateReports(); // 错误: 方法在声明的抽象类中不存在,因为创建的是抽象类型的引用
+
 //声明文件
 // declare var 声明全局变量
 // declare function 声明全局方法
@@ -548,54 +723,6 @@ console.log(Days3["Sun"] === 7); // true
 console.log(Days3["Mon"] === 1.5); // true
 console.log(Days3["Tue"] === 2.5); // true
 console.log(Days3["Sat"] === 6.5); // true
-
-//类
-//在TypeScript里，成员都默认为 public。
-//当成员被标记成 private时，它就不能在声明它的类的外部访问
-//protected修饰符与 private修饰符的行为很相似，但有一点不同， protected成员在派生类中仍然可以访问
-class Animal2 {
-    name: string;
-    constructor(theName: string) { this.name = theName; }
-    move(distanceInMeters: number = 0) {
-        console.log(`${this.name} moved ${distanceInMeters}m.`);
-    }
-}
-
-class Snake extends Animal2 {
-    constructor(name: string) { super(name); }
-    move(distanceInMeters = 5) {
-        console.log("Slithering...");
-        super.move(distanceInMeters);
-    }
-}
-
-class Horse extends Animal2 {
-    constructor(name: string) { super(name); }
-    move(distanceInMeters = 45) {
-        console.log("Galloping...");
-        super.move(distanceInMeters);
-    }
-}
-
-let sam = new Snake("Sammy the Python");
-let tomtom: Animal2 = new Horse("Tommy the Palomino");
-sam.move();
-tomtom.move(34);
-//readonly修饰符--可以使用 readonly关键字将属性设置为只读的。 只读属性必须在声明时或构造函数里被初始化
-class Octopus {
-    readonly name: string;
-    readonly numberOfLegs: number = 8;
-    constructor (theName: string) {
-        this.name = theName;
-    }
-}
-let dad = new Octopus("Man with the 8 strong legs");
-// dad.name = "Man with the 3-piece suit"; // 错误! name 是只读的.
-
-//存取器--TypeScript支持通过getters/setters来截取对对象成员的访问
-
-//静态属性
-
 
 //函数的类型
 function sum3(x: number, y: number): number {
