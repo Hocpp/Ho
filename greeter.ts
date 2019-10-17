@@ -564,6 +564,168 @@ department.printName();
 department.printMeeting();
 // department.generateReports(); // 错误: 方法在声明的抽象类中不存在,因为创建的是抽象类型的引用
 
+//函数--TypeScript函数可以创建有名字的函数和匿名函数
+//为函数定义类型
+//函数的类型
+function sum3(x: number, y: number): number {
+    return x + y;
+}
+//函数表达式
+//(x: number, y: number) => number 对mySum 添加类型
+//TypeScript 的类型定义中，=> 用来表示函数的定义
+let mySum: (x: number, y: number) => number = function (x: number, y: number): number {
+    return x + y;
+};
+//用接口定义函数的形状
+interface SearchFunc {
+    (source: string, subString: string): boolean;
+}
+let mySearch: SearchFunc;
+mySearch = function(source: string, subString: string) {
+    return source.search(subString) !== -1;
+}
+//可选参数--可选参数必须接在必需参数后面
+function buildName(firstName: string, lastName?: string):string {
+    if (lastName) {
+        return firstName + ' ' + lastName;
+    } else {
+        return firstName;
+    }
+}
+let tomcat = buildName('Tom', 'Cat');
+let tom6 = buildName('Tom');
+//参数默认值
+function buildName2(firstName: string, lastName: string = 'Cat') {
+    return firstName + ' ' + lastName;
+}
+let tomcat2 = buildName2('Tom', 'Cat');
+let tom7 = buildName2('Tom');
+function push(array: any[], ...items: any[]) {
+    items.forEach(function(item) {
+        array.push(item);
+    });
+}
+let a = [];
+push(a, 1, 2, 3);
+
+//重载--重载允许一个函数接受不同数量或类型的参数时
+function reverse(x: number): number;
+function reverse(x: string): string;
+function reverse(x: number | string): number | string {
+    if (typeof x === 'number') {
+        return Number(x.toString().split('').reverse().join(''));
+    } else if (typeof x === 'string') {
+        return x.split('').reverse().join('');
+    }
+}
+
+function add(x: number, y: number): number {
+    return x + y;
+}
+let myAdd = function(x: number, y: number): number { return x + y; };
+//书写完整函数类型--函数的类型只是由参数类型和返回值组成的
+let myAdd2: (x: number, y: number) => number =
+    function(x: number, y: number): number { return x + y; };
+//推断类型
+// myAdd has the full function type
+let myAdd3 = function(x: number, y: number): number { return x + y; };
+// The parameters `x` and `y` have the type number
+let myAdd4: (baseValue: number, increment: number) => number =
+    function(x, y) { return x + y; };
+//可选参数和默认参数--TypeScript里的每个函数参数都是必须的
+function buildNames(firstName: string, lastName: string) {
+    return firstName + " " + lastName;
+}
+// let result1 = buildNames("Bob");                  // error, too few parameters
+// let result2 = buildNames("Bob", "Adams", "Sr.");  // error, too many parameters
+let result3 = buildNames("Bob", "Adams");         // ah, just right
+//JavaScript里，每个参数都是可选的，可传可不传。 没传参的时候，它的值就是undefined。
+// 在TypeScript里我们可以在参数名旁使用 ?实现可选参数的功能
+//可选参数必须跟在必须参数后面
+function buildName3(firstName: string, lastName?: string) {
+    if (lastName)
+        return firstName + " " + lastName;
+    else
+        return firstName;
+}
+let result4 = buildName3("Bob");  // works correctly now
+// let result5 = buildName2("Bob", "Adams", "Sr.");  // error, too many parameters
+let result6 = buildName3("Bob", "Adams");  // ah, just right
+//在TypeScript里，我们也可以为参数提供一个默认值
+//在所有必须参数后面的带默认初始化的参数都是可选的
+//与普通可选参数不同的是，带默认值的参数不需要放在必须参数的后面
+function buildName4(firstName: string, lastName = "Smith") {
+    return firstName + " " + lastName;
+}
+let result7 = buildName4("Bob");                  // works correctly now, returns "Bob Smith"
+let result8 = buildName4("Bob", undefined);       // still works, also returns "Bob Smith"
+// let result9 = buildName4("Bob", "Adams", "Sr.");  // error, too many parameters
+let result10 = buildName4("Bob", "Adams");         // ah, just right
+//如果带默认值的参数出现在必须参数前面，用户必须明确的传入 undefined值来获得默认值
+function buildName5(firstName = "Will", lastName: string) {
+    return firstName + " " + lastName;
+}
+// let result11 = buildName5("Bob");                  // error, too few parameters
+// let result12 = buildName5("Bob", "Adams", "Sr.");  // error, too many parameters
+let result13 = buildName5("Bob", "Adams");         // okay and returns "Bob Adams"
+let result14 = buildName5(undefined, "Adams");     // okay and returns "Will Adams"
+//剩余参数--必要参数，默认参数和可选参数有个共同点：它们表示某一个参数
+//在TypeScript里，你可以把所有参数收集到一个变量里
+function buildName6(firstName: string, ...restOfName: string[]) {
+    return firstName + " " + restOfName.join(" ");
+}
+let employeeName = buildName6("Joseph", "Samuel", "Lucas", "MacKinzie");
+//这个省略号也会在带有剩余参数的函数类型定义上使用到
+function buildName7(firstName: string, ...restOfName: string[]) {
+    return firstName + " " + restOfName.join(" ");
+}
+let buildNameFun: (fname: string, ...rest: string[]) => string = buildName7;
+
+//this参数--this参数是个假的参数，它出现在参数列表的最前面
+function f(this: void) {
+    // make sure `this` is unusable in this standalone function
+}
+//this参数在回调函数里
+interface Card {
+    suit: string;
+    card: number;
+}
+interface Deck {
+    suits: string[];
+    cards: number[];
+    createCardPicker(this: Deck): () => Card; //返回值是函数，返回的函数的返回值是Card类型
+}
+let deck: Deck = {
+    suits: ["hearts", "spades", "clubs", "diamonds"],
+    cards: Array(52),
+    // NOTE: The function now explicitly specifies that its callee must be of type Deck
+    //提供this参数，是Deck类型的
+    createCardPicker: function(this: Deck) {
+        return () => {
+            let pickedCard = Math.floor(Math.random() * 52);
+            let pickedSuit = Math.floor(pickedCard / 13);
+            return {suit: this.suits[pickedSuit], card: pickedCard % 13};
+        }
+    }
+}
+let cardPicker = deck.createCardPicker();
+let pickedCard = cardPicker();
+alert("card: " + pickedCard.card + " of " + pickedCard.suit);
+
+interface UIElement {
+    addClickListener(onclick: (this: void, e: Event) => void): void;
+}
+class Handler {
+    info: string;
+    onClickBad(this: Handler, e: Event) {
+        // oops, used this here. using this callback would crash at runtime
+        // this.info = e.message;
+    }
+}
+let h = new Handler();
+// uiElement.addClickListener(h.onClickBad); // error!
+
+
 //声明文件
 // declare var 声明全局变量
 // declare function 声明全局方法
@@ -596,7 +758,6 @@ department.printMeeting();
 // 还有 declare let 和 declare const，使用 let 与使用 var 没有什么区别：
 declare let jQuery: (selector: string) => any; //声明一个jQuery函数，返回任意类型
 //声明语句中只能定义类型，切勿在声明语句中定义具体的实现
-
 //declare function --> declare function 用来定义全局函数的类型。
 // jQuery 其实就是一个函数，所以也可以用 function 来定义：
 // src/jQuery.d.ts
@@ -723,61 +884,3 @@ console.log(Days3["Sun"] === 7); // true
 console.log(Days3["Mon"] === 1.5); // true
 console.log(Days3["Tue"] === 2.5); // true
 console.log(Days3["Sat"] === 6.5); // true
-
-//函数的类型
-function sum3(x: number, y: number): number {
-    return x + y;
-}
-//函数表达式
-//(x: number, y: number) => number 对mySum 添加类型
-//TypeScript 的类型定义中，=> 用来表示函数的定义
-let mySum: (x: number, y: number) => number = function (x: number, y: number): number {
-    return x + y;
-};
-
-//用接口定义函数的形状
-interface SearchFunc {
-    (source: string, subString: string): boolean;
-}
-
-let mySearch: SearchFunc;
-mySearch = function(source: string, subString: string) {
-    return source.search(subString) !== -1;
-}
-//可选参数--可选参数必须接在必需参数后面
-function buildName(firstName: string, lastName?: string):string {
-    if (lastName) {
-        return firstName + ' ' + lastName;
-    } else {
-        return firstName;
-    }
-}
-let tomcat = buildName('Tom', 'Cat');
-let tom6 = buildName('Tom');
-
-//参数默认值
-function buildName2(firstName: string, lastName: string = 'Cat') {
-    return firstName + ' ' + lastName;
-}
-let tomcat2 = buildName2('Tom', 'Cat');
-let tom7 = buildName2('Tom');
-
-function push(array: any[], ...items: any[]) {
-    items.forEach(function(item) {
-        array.push(item);
-    });
-}
-
-let a = [];
-push(a, 1, 2, 3);
-
-//重载--重载允许一个函数接受不同数量或类型的参数时
-function reverse(x: number): number;
-function reverse(x: string): string;
-function reverse(x: number | string): number | string {
-    if (typeof x === 'number') {
-        return Number(x.toString().split('').reverse().join(''));
-    } else if (typeof x === 'string') {
-        return x.split('').reverse().join('');
-    }
-}
