@@ -810,6 +810,85 @@ function createInstance<A extends Animales>(c: new () => A): A {
 createInstance(Lion).keeper.nametag;  // typechecks!
 createInstance(Bee).keeper.hasMask;   // typechecks!
 
+//枚举--使用枚举我们可以定义一些带名字的常量
+//枚举（Enum）类型用于取值被限定在一定范围内的场景，比如一周只能有七天，颜色限定为红绿蓝等
+enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat}
+//枚举成员会被赋值为从 0 开始递增的数字，同时也会对枚举值到枚举名进行反向映射
+console.log(Days["Sun"] === 0); // true
+console.log(Days["Mon"] === 1); // true
+console.log(Days["Tue"] === 2); // true
+console.log(Days["Sat"] === 6); // true
+console.log(Days[0] === "Sun"); // true
+console.log(Days[1] === "Mon"); // true
+console.log(Days[2] === "Tue"); // true
+console.log(Days[6] === "Sat"); // true
+
+//给枚举项手动赋值
+enum Days2 {Sun = 7, Mon = 1, Tue, Wed, Thu, Fri, Sat}
+console.log(Days2["Sun"] === 7) // true
+console.log(Days2["Mon"] === 1) // true
+console.log(Days2["Tue"] === 2) // true
+console.log(Days2["Sat"] === 6) // true
+//手动赋值的枚举项也可以为小数或负数，此时后续未手动赋值的项的递增步长仍为 1
+enum Days3 {Sun = 7, Mon = 1.5, Tue, Wed, Thu, Fri, Sat};
+console.log(Days3["Sun"] === 7); // true
+console.log(Days3["Mon"] === 1.5); // true
+console.log(Days3["Tue"] === 2.5); // true
+console.log(Days3["Sat"] === 6.5); // true
+//数字枚举
+enum Direction {
+    Up = 1,
+    Down,
+    Left,
+    Right
+}
+enum Responses {
+    No = 0,
+    Yes = 1,
+}
+function respond(recipient: string, message: Responses): void {
+    // ...
+}
+respond("Princess Caroline", Responses.Yes)
+function getSomeValue():number {
+    return 1
+}
+//不带初始化器的枚举或者被放在第一的位置，或者被放在使用了数字常量或其它常量初始化了的枚举后面
+enum E {
+    A = getSomeValue(),
+    // B, // error! 'A' is not constant-initialized, so 'B' needs an initializer
+}
+//字符串枚举
+enum Directionf {
+    Up = "UP",
+    Down = "DOWN",
+    Left = "LEFT",
+    Right = "RIGHT",
+}
+//const枚举
+const enum Enum {
+    A = 1,
+    B = A * 2
+}
+//外部枚举
+declare enum Enum2 {
+    A = 1,
+    B,
+    C = 2
+}
+//类型兼容
+interface Empty<T> {
+}
+let xxx: Empty<number>;
+let yyy: Empty<string>;
+xxx = yyy;  // OK, because y matches structure of x
+interface NotEmpty<T> {
+    data: T;
+}
+let xxxx: NotEmpty<number>;
+let yyyy: NotEmpty<string>;
+// xxxx = yyyy;  // Error, because x and y are not compatible
+
 //声明文件
 // declare var 声明全局变量
 // declare function 声明全局方法
@@ -944,27 +1023,3 @@ tomt.push('male');
 // Argument of type 'true' is not assignable to parameter of type 'string | number'.
 // tomt.push(true);
 
-//枚举（Enum）类型用于取值被限定在一定范围内的场景，比如一周只能有七天，颜色限定为红绿蓝等
-enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat}
-//枚举成员会被赋值为从 0 开始递增的数字，同时也会对枚举值到枚举名进行反向映射
-console.log(Days["Sun"] === 0); // true
-console.log(Days["Mon"] === 1); // true
-console.log(Days["Tue"] === 2); // true
-console.log(Days["Sat"] === 6); // true
-console.log(Days[0] === "Sun"); // true
-console.log(Days[1] === "Mon"); // true
-console.log(Days[2] === "Tue"); // true
-console.log(Days[6] === "Sat"); // true
-
-//给枚举项手动赋值
-enum Days2 {Sun = 7, Mon = 1, Tue, Wed, Thu, Fri, Sat}
-console.log(Days2["Sun"] === 7) // true
-console.log(Days2["Mon"] === 1) // true
-console.log(Days2["Tue"] === 2) // true
-console.log(Days2["Sat"] === 6) // true
-//手动赋值的枚举项也可以为小数或负数，此时后续未手动赋值的项的递增步长仍为 1
-enum Days3 {Sun = 7, Mon = 1.5, Tue, Wed, Thu, Fri, Sat};
-console.log(Days3["Sun"] === 7); // true
-console.log(Days3["Mon"] === 1.5); // true
-console.log(Days3["Tue"] === 2.5); // true
-console.log(Days3["Sat"] === 6.5); // true
