@@ -725,6 +725,90 @@ class Handler {
 let h = new Handler();
 // uiElement.addClickListener(h.onClickBad); // error!
 
+//泛型--可以支持多种类型的数据
+//使用any类型来定义函数可以接收任何类型的参数，这样就丢失了一些信息：传入的类型与返回的类型应该是相同的。
+// 如果我们传入一个数字，我们只知道任何类型的值都有可能被返回，因此，我们需要一种方法使返回值的类型与传入参数的类型是相同的
+function identity<T>(arg:T): T{
+    return arg
+}
+let output = identity<string>("myString");
+let output2 = identity("myString");
+//使用泛型变量
+function loggingIdentity<T>(arg: T[]): T[] {
+    console.log(arg.length);  // Array has a .length, so no more error 标明是数组类型
+    return arg;
+}
+function loggingIdentity2<T>(arg: Array<T>): Array<T> {
+    console.log(arg.length);  // Array has a .length, so no more error
+    return arg;
+}
+//泛型类型--泛型函数的类型与非泛型函数的类型没什么不同，只是有一个类型参数在最前面
+let myIdentity: <T>(arg: T) => T = identity;
+//我们也可以使用不同的泛型参数名，只要在数量上和使用方式上能对应上就可以
+let myIdentity3: <U>(arg: U) => U = identity;
+//还可以使用带有调用签名的对象字面量来定义泛型函数
+let myIdentity4: { <T>(arg: T): T } = identity;
+//泛型接口
+interface GenericIdentityFn{
+    <T>(arg: T): T
+}
+let myIdentity5: GenericIdentityFn = identity;
+//把泛型参数当作整个接口的一个参数
+interface GenericIdentityFn2<T> {
+    (arg: T): T;
+}
+let myIdentity6: GenericIdentityFn2<number> = identity;
+//除了泛型接口，我们还可以创建泛型类。 注意，无法创建泛型枚举和泛型命名空间
+//泛型类--泛型类看上去与泛型接口差不多,泛型类使用（ <>）括起泛型类型，跟在类名后面
+class GenericNumber<T>{
+    zeroValue: T
+    add: (x : T,y : T) => T
+}
+let myGenericNumber = new GenericNumber<number>();
+myGenericNumber.zeroValue = 0;
+myGenericNumber.add = function(x, y) { return x + y; };
+//泛型约束
+interface Lengthwise {
+    length: number;
+}
+function loggingIdentity6<T extends Lengthwise>(arg: T): T {
+    console.log(arg.length);  // Now we know it has a .length property, so no more error
+    return arg;
+}
+// loggingIdentity6(3);  // Error, number doesn't have a .length property
+//在泛型约束中使用类型参数--可以声明一个类型参数，且它被另一个类型参数所约束
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+    return obj[key]
+}
+let xx = { a: 1, b: 2, c: 3, d: 4 };
+getProperty(xx, "a"); // okay
+// getProperty(x, "m"); // error: Argument of type 'm' isn't assignable to 'a' | 'b' | 'c' | 'd'.
+//在泛型里使用类类型
+function create<T>(c: { new(): T; }): T {
+    return new c();
+}
+//使用原型属性推断并约束构造函数与类实例的关系
+class BeeKeeper {
+    hasMask: boolean;
+}
+class ZooKeeper {
+    nametag: string;
+}
+class Animales {
+    numLegs: number;
+}
+class Bee extends Animales {
+    keeper: BeeKeeper;
+}
+class Lion extends Animales {
+    keeper: ZooKeeper;
+}
+function createInstance<A extends Animales>(c: new () => A): A {
+    return new c();
+}
+
+createInstance(Lion).keeper.nametag;  // typechecks!
+createInstance(Bee).keeper.hasMask;   // typechecks!
 
 //声明文件
 // declare var 声明全局变量
