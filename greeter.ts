@@ -1020,7 +1020,7 @@ handleEvent(document.getElementById('hello'), 'scroll');  // 没问题
 let tom2: [string, number] = ['Tom', 25];
 
 let tomt: [string, number];
-tomt = ['Tom', 25];
+tomt = ['Tom', 25];0
 //当添加越界的元素时，它的类型会被限制为元组中每个类型的联合类型
 tomt.push('male');
 // Argument of type 'true' is not assignable to parameter of type 'string | number'.
@@ -1029,3 +1029,4 @@ tomt.push('male');
 function rebase(name: string):string {
     return 'hio'
 }
+console.log(rebase('ko'))
