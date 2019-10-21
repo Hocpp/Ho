@@ -775,11 +775,9 @@ function loggingIdentity6<T extends Lengthwise>(arg: T): T {
     console.log(arg.length);  // Now we know it has a .length property, so no more error
     return arg;
 }
-
-
-
 // loggingIdentity6(3);  // Error, number doesn't have a .length property
 //在泛型约束中使用类型参数--可以声明一个类型参数，且它被另一个类型参数所约束
+//传入一个obj对象和对象里的key，key必须是对象里存在的
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
     return obj[key]
 }
@@ -892,6 +890,270 @@ let xxxx: NotEmpty<number>;
 let yyyy: NotEmpty<string>;
 // xxxx = yyyy;  // Error, because x and y are not compatible
 
+//高级类型
+//交叉类型--交叉类型是将多个类型合并为一个类型，这让我们可以把现有的多种类型叠加到一起成为一种类型
+function extend<T, U>(first: T, second: U): T & U {
+    let result = <T & U>{};
+    for (let id in first) {
+        (<any>result)[id] = (<any>first)[id];
+    }
+    for (let id in second) {
+        if (!result.hasOwnProperty(id)) {
+            (<any>result)[id] = (<any>second)[id];
+        }
+    }
+    return result;
+}
+interface Loggable {
+    log(): void;
+}
+class Psnt {
+    constructor(public name: string) { }
+}
+class ConsoleLogger implements Loggable {
+    log() {
+        // ...
+    }
+}
+let jim = extend(new Psnt("Jim"), new ConsoleLogger());
+let nnn = jim.name;
+jim.log();
+//联合类型（Union Types）--联合类型与交叉类型很有关联，但是使用上却完全不同
+function padLeft(value: string, padding: string | number) {
+    // ...
+}
+// let indentedString = padLeft("Hello world", true); // errors during compilation
+interface Bird {
+    fly();
+    layEggs();
+}
+
+interface Fish {
+    swim();
+    layEggs();
+}
+function getSmallPet(): Fish | Bird {
+    // ...
+    let obj = <Fish>{}
+    obj.swim = function () {
+
+    }
+    obj.layEggs = function () {
+
+    }
+    return obj
+}
+let pet = getSmallPet();
+pet.layEggs(); // okay
+// pet.swim();    // errors
+
+//类型保护与区分类型
+// 每一个成员访问都会报错
+// if (pet.swim) {
+//     pet.swim();
+// }
+// else if (pet.fly) {
+//     pet.fly();
+// }
+//为了让这段代码工作，我们要使用类型断言
+if ((<Fish>pet).swim) {
+    (<Fish>pet).swim();
+} else {
+    (<Bird>pet).fly();
+}
+//用户自定义的类型保护
+//TypeScript里的 类型保护机制让它成为了现实。 类型保护就是一些表达式,们会在运行时检查以确保在某个作用域里的类型
+//pet is Fish就是类型谓词。 谓词为 parameterName is Type这种形式， parameterName必须是来自于当前函数签名里的一个参数名
+function isFish(pet: Fish | Bird): pet is Fish {
+    return (<Fish>pet).swim !== undefined;
+}
+if (isFish(pet)) {
+    pet.swim();
+} else {
+    pet.fly();
+}
+//typeof类型保护
+function isNumber(x: any): x is number {
+    return typeof x === "number";
+}
+function isString(x: any): x is string {
+    return typeof x === "string";
+}
+//这些* typeof类型保护*只有两种形式能被识别： typeof v === "typename"和 typeof v !== "typename"，
+// "typename"必须是 "number"， "string"， "boolean"或 "symbol"。
+function padLeft2(value: string, padding: string | number) {
+    if (isNumber(padding)) {
+        return Array(padding + 1).join(" ") + value;
+    }
+    if (isString(padding)) {
+        return padding + value;
+    }
+    throw new Error(`Expected string or number, got '${padding}'.`);
+}
+//instanceof类型保护-- instanceof类型保护是通过构造函数来细化类型的一种方式
+
+
+//类型别名--类型别名用来给一个类型起个新名字
+//类型别名常用于联合类型
+type Name = string;
+type NameResolver = () => string;
+type NameOrResolver = Name | NameResolver;
+function getName(n: NameOrResolver): Name {
+    if (typeof n === 'string') {
+        return n;
+    } else {
+        return n();
+    }
+}
+//字符串字面量类型--字符串字面量类型用来约束取值只能是某几个字符串中的一个
+type EventNames = 'click' | 'scroll' | 'mousemove';
+function handleEvent(ele: Element, event: EventNames) {
+    // do something
+}
+handleEvent(document.getElementById('hello'), 'scroll');  // 没问题
+// handleEvent(document.getElementById('world'), 'dbclick'); // 报错，event 不能为 'dbclick'
+//同接口一样，类型别名也可以是泛型 - 我们可以添加类型参数并且在别名声明的右侧传入
+type Container<T> = { value: T };
+//也可以使用类型别名来在属性里引用自己
+type Tree<T> = {
+    value: T;
+    left: Tree<T>;
+    right: Tree<T>;
+}
+//交叉类型一起使用，我们可以创建出一些十分稀奇古怪的类型
+type LinkedList<T> = T & { next: LinkedList<T> };
+interface PersonkLP {
+    name: string;
+}
+let peopleTK: LinkedList<PersonkLP>;
+let so = peopleTK.name;
+let sl = peopleTK.next.name;
+let st = peopleTK.next.next.name;
+let sd = peopleTK.next.next.next.name;
+//然而，类型别名不能出现在声明右侧的任何地方
+// type Yikes = Array<Yikes>; // error
+
+//接口 vs. 类型别名
+//类型别名可以像接口一样--接口创建了一个新的名字，可以在其它任何地方使用。 类型别名并不创建新名字
+type Alias = { num: number }
+interface Interface {
+    num: number;
+}
+declare function aliased(arg: Alias): Alias;
+declare function interfaced(arg: Interface): Interface;
+//另一个重要区别是类型别名不能被 extends和 implements（自己也不能 extends和 implements其它类型）
+
+//字符串字面量类型--字符串字面量类型允许你指定字符串必须的固定值
+type Easing = "ease-in" | "ease-out" | "ease-in-out";
+class UIElement {
+    animate(dx: number, dy: number, easing: Easing) {
+        if (easing === "ease-in") {
+            // ...
+        }
+        else if (easing === "ease-out") {
+        }
+        else if (easing === "ease-in-out") {
+        }
+        else {
+            // error! should not pass null or undefined.
+        }
+    }
+}
+let button = new UIElement();
+button.animate(0, 0, "ease-in");
+// button.animate(0, 0, "uneasy"); // error: "uneasy" is not allowed here
+
+//数字字面量类型
+function rollDie(): 1 | 2 | 3 | 4 | 5 | 6 {
+    return 1
+}
+
+//可辨识联合--可以合并单例类型，联合类型，类型保护和类型别名来创建一个叫做 可辨识联合的高级模式，它也称做 标签联合或 代数数据类型
+interface Square {
+    kind: "square";
+    size: number;
+}
+interface Rectangle {
+    kind: "rectangle";
+    width: number;
+    height: number;
+}
+interface Circle {
+    kind: "circle";
+    radius: number;
+}
+type Shapes = Square | Rectangle | Circle;
+function area(s: Shapes) {
+    switch (s.kind) {
+        case "square": return s.size * s.size;
+        case "rectangle": return s.height * s.width;
+        case "circle": return Math.PI * s.radius ** 2;
+    }
+}
+//完整性检查--
+function assertNever(x: never): never {
+    throw new Error("Unexpected object: " + x);
+}
+function areas(s: Shapes) {
+    switch (s.kind) {
+        case "square": return s.size * s.size;
+        case "rectangle": return s.height * s.width;
+        case "circle": return Math.PI * s.radius ** 2;
+        default: return assertNever(s); // error here if there are missing cases
+    }
+}
+
+//多态的 this类型--多态的 this类型表示的是某个包含类或接口的 子类型
+class BasicCalculator {
+    public constructor(protected value: number = 0) { }
+    public currentValue(): number {
+        return this.value;
+    }
+    public add(operand: number): this {
+        this.value += operand;
+        return this;
+    }
+    public multiply(operand: number): this {
+        this.value *= operand;
+        return this;
+    }
+    // ... other operations go here ...
+}
+let v = new BasicCalculator(2)
+    .multiply(5)
+    .add(1)
+    .currentValue();
+//索引类型（Index types）--使用索引类型，编译器就能够检查使用了动态属性名的代码
+// keyof T， 索引类型查询操作符
+function pluck<T, K extends keyof T>(o: T, names: K[]): T[K][] {
+    return names.map(n => o[n]);
+}
+interface PersonDC {
+    name: string;
+    age: number;
+}
+let personDC: PersonDC = {
+    name: 'Jarid',
+    age: 35
+};
+let strings: string[] = pluck(personDC, ['name']); // ok, string[]
+let personProps: keyof PersonDC; // 'name' | 'age'
+//索引类型和字符串索引签名
+interface Map<T> {
+    [key: string]: T;
+}
+let keys: keyof Map<number>; // string
+let value: Map<number>['foo']; // number
+//映射类型--一个常见的任务是将一个已知的类型每个属性都变为可选的,从旧类型中创建新类型的一种方式
+type ReadonlyHO<T> = {
+    readonly [P in keyof T]: T[P];
+}
+type PartialHO<T> = {
+    [P in keyof T]?: T[P];
+}
+type PersonPartial = PartialHO<Person>;
+type ReadonlyPerson = ReadonlyHO<Person>;
+
 //声明文件
 // declare var 声明全局变量
 // declare function 声明全局方法
@@ -992,28 +1254,6 @@ let allDiv: NodeList = document.querySelectorAll('div');
 document.addEventListener('click', function(e: MouseEvent) {
     // Do something
 });
-
-//类型别名--类型别名用来给一个类型起个新名字
-//类型别名常用于联合类型
-type Name = string;
-type NameResolver = () => string;
-type NameOrResolver = Name | NameResolver;
-function getName(n: NameOrResolver): Name {
-    if (typeof n === 'string') {
-        return n;
-    } else {
-        return n();
-    }
-}
-
-//字符串字面量类型--字符串字面量类型用来约束取值只能是某几个字符串中的一个
-type EventNames = 'click' | 'scroll' | 'mousemove';
-function handleEvent(ele: Element, event: EventNames) {
-    // do something
-}
-
-handleEvent(document.getElementById('hello'), 'scroll');  // 没问题
-// handleEvent(document.getElementById('world'), 'dbclick'); // 报错，event 不能为 'dbclick'
 
 //元组--数组合并了相同类型的对象，而元组（Tuple）合并了不同类型的对象
 //定义一对值分别为 string 和 number 的元组
