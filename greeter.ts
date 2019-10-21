@@ -1026,3 +1026,6 @@ tomt.push('male');
 // Argument of type 'true' is not assignable to parameter of type 'string | number'.
 // tomt.push(true);
 
+function rebase(name: string):string {
+    return 'hio'
+}
