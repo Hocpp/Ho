@@ -775,6 +775,9 @@ function loggingIdentity6<T extends Lengthwise>(arg: T): T {
     console.log(arg.length);  // Now we know it has a .length property, so no more error
     return arg;
 }
+
+
+
 // loggingIdentity6(3);  // Error, number doesn't have a .length property
 //在泛型约束中使用类型参数--可以声明一个类型参数，且它被另一个类型参数所约束
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
