@@ -1269,4 +1269,5 @@ tomt.push('male');
 function rebase(name: string):string {
     return 'hio'
 }
+// 测试
 console.log(rebase('ko'))
