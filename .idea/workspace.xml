@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e3c9dce8-dcfe-4350-bdaf-4c7a6a777e84" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Ho.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/greeter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/greeter.ts" afterDir="false" />
-    </list>
+    <list default="true" id="e3c9dce8-dcfe-4350-bdaf-4c7a6a777e84" name="Default" comment="jiu" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -26,8 +19,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/greeter.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2404">
-              <caret line="90" column="32" lean-forward="true" selection-start-line="90" selection-start-column="32" selection-end-line="90" selection-end-column="32" />
+            <state relative-caret-position="221">
+              <caret line="195" column="16" lean-forward="true" selection-start-line="195" selection-start-column="16" selection-end-line="195" selection-end-column="16" />
             </state>
           </provider>
         </entry>
@@ -84,7 +77,7 @@
       <option name="presentableId" value="Default" />
       <updated>1606225227911</updated>
       <workItem from="1606225229240" duration="352000" />
-      <workItem from="1606225911929" duration="177000" />
+      <workItem from="1606225911929" duration="566000" />
     </task>
     <task id="LOCAL-00001" summary="jiu">
       <created>1606225273902</created>
@@ -93,15 +86,21 @@
       <option name="project" value="LOCAL" />
       <updated>1606225273902</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="jiu">
+      <created>1606226105661</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1606226105661</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="529000" />
+    <option name="totallyTimeSpent" value="918000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1295" height="695" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1731533" />
       <window_info id="Structure" order="1" weight="0.25" />
@@ -133,8 +132,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/greeter.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2404">
-          <caret line="90" column="32" lean-forward="true" selection-start-line="90" selection-start-column="32" selection-end-line="90" selection-end-column="32" />
+        <state relative-caret-position="221">
+          <caret line="195" column="16" lean-forward="true" selection-start-line="195" selection-start-column="16" selection-end-line="195" selection-end-column="16" />
         </state>
       </provider>
     </entry>
