@@ -192,6 +192,8 @@ interface Person4 {
     [propName: string]: any; //任意属性和允许任何类型
     // [propName: string]: string; 确定属性和可选属性的类型不是string的话会报错
 }
+
+
 let tom4: Person4 = {
     name: 'Tom',
     age: 26,
